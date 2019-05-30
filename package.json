@@ -1,0 +1,32 @@
+{
+  "name": "repooneseq",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.0.0",
+    "ejs": "^2.6.1",
+    "express": "^4.17.0",
+    "express-session": "^1.16.1",
+    "log4js": "^4.2.0",
+    "moment": "^2.24.0",
+    "mysql": "^2.17.1",
+    "mysql2": "^1.6.5",
+    "node-cron": "^2.0.3",
+    "node-datetime": "^2.1.2",
+    "node-notifier": "^5.4.0",
+    "nodemailer": "^6.1.1",
+    "request": "^2.88.0",
+    "sequelize": "^5.8.6",
+    "sha1": "^1.1.1",
+    "xml2js": "^0.4.19"
+  }
+}
