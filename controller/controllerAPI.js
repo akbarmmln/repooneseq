@@ -20,7 +20,7 @@
 //             "content-type": "application/json",
 //         };
 
-//         var data1 = await dbConnection.query("SELECT id_booking FROM booking WHERE status_pembayaran = :stat_pem",
+//         var data1 = await dbConnection.query("SELECT id_booking, invoice_number FROM booking WHERE status_pembayaran = :stat_pem",
 //         { replacements: { stat_pem:'Pending' }, type: sequelize.QueryTypes.SELECT },
 //         {
 //             raw: true
@@ -31,8 +31,9 @@
 //             for(var i=0; i<data1.length; i++)
 //             {
 //                 var idbook = data1[i]['id_booking'];
-//                 var transidmerchant = idbook;
-//                 var sessid = idbook;
+//                 var inv = data1[i]['invoice_number'];
+//                 var transidmerchant = inv;
+//                 var sessid = inv;
 //                 var words = mallid+sharedkey+transidmerchant;
 //                 var words_ = sha1(words);
 

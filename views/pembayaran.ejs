@@ -1,4 +1,5 @@
 <%
+    var inv = data[0].invoice_number; 
     var nk = data[0].nama_kapal;
     var k = data[0].asal;
     var t = data[0].tujuan;
@@ -15,7 +16,7 @@
     var stat = data[0].status_pembayaran;
 
     var basket = "tiket,"+tb+".00,1,"+tb+".00";
-    var wordsmentah = tb+".0011408317pZ8nb8joZpJh"+idbook;
+    var wordsmentah = tb+".0011408317pZ8nb8joZpJh"+inv;
 %>
 
         <!doctype html>
@@ -266,12 +267,12 @@
                                                         <input type="hidden" class="form-control" name="CHAINMERCHANT" value="NA" readonly required/>
                                                         <input type="hidden" class="form-control" name="AMOUNT" value="<%=tb%>.00" readonly required/>
                                                         <input type="hidden" class="form-control" name="PURCHASEAMOUNT" value="<%=tb%>.00" readonly required/>
-                                                        <input type="hidden" class="form-control" name="TRANSIDMERCHANT" value="<%=idbook%>" readonly required/>
+                                                        <input type="hidden" class="form-control" name="TRANSIDMERCHANT" value="<%=inv%>" readonly required/>
                                                         <input type="hidden" class="form-control" name="WORDS" value="<%= sha1(wordsmentah);%>" readonly required/>
                                                         <input type="hidden" class="form-control" name="CURRENCY" value="360" readonly required/>
                                                         <input type="hidden" class="form-control" name="PURCHASECURRENCY" value="360" readonly required/>
                                                         <input type="hidden" class="form-control" name="COUNTRY" value="ID" readonly required/>
-                                                        <input type="hidden" class="form-control" name="SESSIONID" value="<%=idbook%>" readonly required/>
+                                                        <input type="hidden" class="form-control" name="SESSIONID" value="<%=inv%>" readonly required/>
                                                         <input type="hidden" class="form-control" name="REQUESTDATETIME" value="<%= moment().format('YYYYMMDDHHmmss')%>" readonly required/>
                                                         <input type="hidden" class="form-control" name="NAME" value="<%=nm%>" readonly required/>
                                                         <input type="hidden" class="form-control" name="EMAIL" value="<%=em%>" readonly required/>

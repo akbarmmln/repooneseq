@@ -683,11 +683,12 @@ exports.prosesbooking = async function(req, res)
                             raw: true
                         });
                         
-                        var ib = 'INV8888'+moment().format('YYYYMMDD')+Task.create_random_number(6)+cek[0]['jmlh'];
+                        var ib = Task.create_random(6);
+                        var inv = 'INV8888'+moment().format('YYYYMMDD')+Task.create_random_number(6)+cek[0]['jmlh'];
 
                         var addbook = await dbConnection.query("INSERT INTO booking (id_booking, id_jadwal, id_customer, nama_pemesan, alamat, notelp, jumlahpenumpang, totalbayar, email_ver, tanggal_booking, tanggal_keberangkatan, invoice_number, session_id, payment_channel, payment_code, status_pembayaran, wm, ws)" +
                         "VALUES (:ib_, :ij_, :ic_, :np_, :a_, :nt_, :jp_, :tb_, :em_, :tglb_, :tglk_, :inv_, :sess_, :pcy_, :pc_, :sp_, :wm_, :ws_)",
-                        { replacements:{ib_:ib, ij_:idjad, ic_:idcus, np_:np, a_:al, nt_:nt, jp_:pax, tb_:th, em_:em, tglb_:tglbooking, tglk_:tglotw, inv_:ib, sess_:ib, pcy_:'', pc_:'', sp_:'Pending', wm_:tglnow, ws_:tglnext}, type: sequelize.QueryTypes.INSERT, transaction: transaction },
+                        { replacements:{ib_:ib, ij_:idjad, ic_:idcus, np_:np, a_:al, nt_:nt, jp_:pax, tb_:th, em_:em, tglb_:tglbooking, tglk_:tglotw, inv_:inv, sess_:inv, pcy_:'', pc_:'', sp_:'Pending', wm_:tglnow, ws_:tglnext}, type: sequelize.QueryTypes.INSERT, transaction: transaction },
                         {
                             raw: true
                         })
@@ -759,15 +760,23 @@ exports.conpembayaran = async function(req, res)
             var idbook = qdata.pt;
 
             var review_kapal_booking = await dbConnection.query("SELECT kapal.nama_kapal, kapal.harga, jadwal.id_kapal, jadwal.tanggal_berangkat, jadwal.tanggal_sampai, jadwal.asal, jadwal.tujuan, " +
-            "jadwal.waktu_berangkat, jadwal.waktu_tiba, booking.tanggal_booking, booking.jumlahpenumpang, booking.totalbayar, " +
-            "booking.nama_pemesan, booking.email_ver, booking.status_pembayaran FROM kapal JOIN jadwal ON kapal.id_kapal = jadwal.id_kapal " +
+            "jadwal.waktu_berangkat, jadwal.waktu_tiba, booking.id_booking, booking.tanggal_booking, booking.jumlahpenumpang, booking.totalbayar, " +
+            "booking.nama_pemesan, booking.email_ver, booking.invoice_number, booking.status_pembayaran FROM kapal JOIN jadwal ON kapal.id_kapal = jadwal.id_kapal " +
             "JOIN booking ON jadwal.id_jadwal = booking.id_jadwal WHERE jadwal.id_jadwal = :idjad_ AND booking.id_booking = :idbook_",
             { replacements:{idjad_:idjad, idbook_:idbook}, type: sequelize.QueryTypes.SELECT },
             {
                 raw: true
             });
 
-            res.render('pembayaran',{judul:"true",idbook:idbook,data:review_kapal_booking,statlogin:sesslog,moment:moment,sha1:sha1});
+            if(review_kapal_booking.length > 0)
+            {
+                res.render('pembayaran',{judul:"true",idbook:idbook,data:review_kapal_booking,statlogin:sesslog,moment:moment,sha1:sha1});
+            }
+            else
+            {
+                notifier.notify({'title': 'Notifikasi', 'message' : 'Data tidak ditemukan'});
+                res.redirect('/app/pesanan');
+            }
         }
         catch(e)
         {
@@ -840,6 +849,49 @@ exports.cancelbooking = async function(req, res)
     else
     {
         notifier.notify({'title': 'Notifikasi', 'message' : 'Masuk kedalam akun Anda untuk dapat melakukan pembatalan pesanan'});
+        res.redirect('/app/login');
+    }
+};
+
+exports.invonumber = async function(req, res)
+{
+    var sesslog = req.session._statlog;
+    if(sesslog == "true")
+    {
+        try
+        {
+            var param = req.params.lk;
+            if(param == '' || param == null || !param)
+            {
+                throw 'err';
+            }
+            
+            var data = await dbConnection.query("SELECT * FROM booking WHERE id_booking = :idbook_",
+            { replacements:{idbook_:param}, type: sequelize.QueryTypes.SELECT },
+            {
+                raw: true
+            });
+
+            if(data.length > 0)
+            {
+                res.render('invonumber',{data:data});
+            }
+            else
+            {
+                notifier.notify({'title': 'Notifikasi', 'message' : 'Data tidak ditemukan'});
+                res.redirect('/app/pesanan');
+            }
+        }
+        catch(e)
+        {
+            console.log(e);
+            notifier.notify({'title': 'Notifikasi', 'message' : 'Terjadi kesalahan pada server. Silahkan coba kembali'});
+            utils.returnErrorFunction(res, 'Error', e);
+        }
+    }
+    else
+    {
+        notifier.notify({'title': 'Notifikasi', 'message' : 'Masuk kedalam akun Anda'});
         res.redirect('/app/login');
     }
 };

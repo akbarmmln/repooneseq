@@ -57,4 +57,7 @@ module.exports = function(app) {
 
     app.route('/app/cancelbooking/:idbook')
         .get(todoList.cancelbooking);
+
+    app.route('/app/invonumber/:lk')
+        .get(todoList.invonumber);
 };
