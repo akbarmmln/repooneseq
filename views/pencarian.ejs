@@ -31,6 +31,7 @@
         
         <!-- Color Panel -->
         <link rel="stylesheet" href="/assets/assetss/css/jquery.colorpanel.css">
+
         <style type="text/css">
             .ui-datepicker {
                 background: -webkit-gradient(linear, left top, left 25, from(#A4FFA4), color-stop(4%, #006600), to(#A4FFA4));
@@ -210,11 +211,90 @@
                         <ul class="w3-blue breadcrumb">
                             <li>
                                 <%
-                                    var hari = moment.utc(date).format('dddd');
-                                    var tanggalfull = moment.utc(date).format('DD MMMM YYYY');
+                                    var hari = moment.utc(date).format('e');
+                                    if(hari == 0)
+                                    {
+                                        hari = 'Minggu';
+                                    }
+                                    else if(hari == 1)
+                                    {
+                                        hari = 'Senin';
+                                    }
+                                    else if(hari == 2)
+                                    {
+                                        hari = 'Selasa';
+                                    }
+                                    else if(hari == 3)
+                                    {
+                                        hari = 'Rabu';
+                                    }
+                                    else if(hari == 4)
+                                    {
+                                        hari = 'Kamis';
+                                    }
+                                    else if(hari == 5)
+                                    {
+                                        hari = 'Jumat';
+                                    }
+                                    else
+                                    {
+                                        hari = 'Sabtu';
+                                    }
+                                    
+                                    var tanggal = moment.utc(date).format('DD');
+                                    var bulan = moment.utc(date).format('MM');
+                                    if(bulan == 1)
+                                    {
+                                        bulan = 'Januari';
+                                    }
+                                    else if(bulan == 2)
+                                    {
+                                        bulan = 'Februari';
+                                    }
+                                    else if(bulan == 3)
+                                    {
+                                        bulan = 'Maret';
+                                    }
+                                    else if(bulan == 4)
+                                    {
+                                        bulan = 'April';
+                                    }
+                                    else if(bulan == 5)
+                                    {
+                                        bulan = 'Mei';
+                                    }
+                                    else if(bulan == 6)
+                                    {
+                                        bulan = 'Juni';
+                                    }
+                                    else if(bulan == 7)
+                                    {
+                                        bulan = 'Juli';
+                                    }
+                                    else if(bulan == 8)
+                                    {
+                                        bulan = 'Agustus';
+                                    }
+                                    else if(bulan == 9)
+                                    {
+                                        bulan = 'September';
+                                    }
+                                    else if(bulan == 10)
+                                    {
+                                        bulan = 'Oktober';
+                                    }
+                                    else if(bulan == 12)
+                                    {
+                                        bulan = 'November';
+                                    }
+                                    else if(bulan == 12)
+                                    {
+                                        bulan = 'Desember';
+                                    }
+                                    var tahun = moment.utc(date).format('YYYY');
                                 %>
                                 <%=hari%>,
-                                <%=tanggalfull%>
+                                <%=tanggal+" "+bulan+" "+tahun%>
                             </li>
                             <li><%=pax%> Penumpang</li>
                         </ul>    

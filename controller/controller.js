@@ -28,6 +28,32 @@ var transporter = nodemailer.createTransport({
 
 exports.index = async function(req, res) {
     res.redirect('/app/home');
+    
+    // let transaction = await Sequelize.transaction();
+    // try
+    // {
+    //     let inpar1 = await dbConnection.query("INSERT INTO parent1 (number) VALUES (:num_)",
+    //     { replacements: { num_:6 }, type: sequelize.QueryTypes.INSERT, transaction: transaction },
+    //     {
+    //         raw: true
+    //     });
+
+    //     let utils1 = await utils.inchild1(transaction);
+    //     let utils2 = await utils.inchild2(transaction);
+
+    //     let inpar2 = await dbConnection.query("INSERT INTO parent2 (string) VALUES (:str_)",
+    //     { replacements: { str_:'6' }, type: sequelize.QueryTypes.INSERT, transaction: transaction },
+    //     {
+    //         raw: true
+    //     });
+
+    //     await transaction.commit();
+    // }
+    // catch(e)
+    // {
+    //     await transaction.rollback();
+    //     console.log(e);
+    // }
 };
 
 exports.home = async function(req, res) {
@@ -460,7 +486,7 @@ exports.pesanan = async function(req, res)
         {
             var sessidcus = req.session._userid;
             var checkbook = await dbConnection.query("SELECT * FROM jadwal JOIN booking ON jadwal.id_jadwal = booking.id_jadwal WHERE booking.id_customer = :idcus_ "+
-            "AND (booking.status_pembayaran != 'Expired' AND booking.status_pembayaran != 'Valid') ORDER BY booking.no DESC",
+            "AND (booking.status_pembayaran != 'Expired' AND booking.status_pembayaran != 'Valid') ORDER BY booking.ws DESC",
             { replacements:{idcus_:sessidcus}, type: sequelize.QueryTypes.SELECT },
             {
                 raw: true
@@ -671,20 +697,31 @@ exports.prosesbooking = async function(req, res)
                     var tglnext = moment().add(1, 'hours').format('YYYY-MM-DD HH:mm');
                     var tglbooking = moment().format('YYYY-MM-DD');
                     
-                        // var addbook = await dbConnection.query("CALL addBooking(:idjad_,:idcus_,:np_,:alamat_,:notelp_,:pax_,:tb_,:em_,@out,:random_,:tglotw_,:tglnow_,:tglnext_,:tglbooking_)",
-                        // { replacements:{idjad_:idjad, idcus_:idcus, np_:np, alamat_:al, notelp_:nt, pax_:pax, tb_:th, em_:em, random_:Task.create_random_number(6), tglotw_:tglotw, tglnow_:tglnow, tglnext_:tglnext, tglbooking_:tglbooking}, transaction: transaction },
-                        // {
-                        //     raw: true
-                        // });
-
-                        var cek = await dbConnection.query("SELECT COUNT(*) as jmlh FROM booking WHERE tanggal_booking = :tglb_",
-                        { replacements:{tglb_:moment().format('YYYY-MM-DD')}, type: sequelize.QueryTypes.SELECT, transaction: transaction },
+                        var kp = '';
+                        var ib = await Task.create_random(6);
+                        if(moment().format('e') == 1 || moment().format('e') == 3)
                         {
-                            raw: true
-                        });
+                            kp = 'INV888';
+                        }
+                        else if(moment().format('e') == 2 || moment().format('e') == 4)
+                        {
+                            kp = 'INV999';
+                        }
+                        else if(moment().format('e') == 5 || moment().format('e') == 6)
+                        {
+                            kp = 'INV508';
+                        }
+                        else
+                        {
+                            kp = 'INV111';
+                        }
                         
-                        var ib = Task.create_random(6);
-                        var inv = 'INV8888'+moment().format('YYYYMMDD')+Task.create_random_number(6)+cek[0]['jmlh'];
+                        if(kp == '' || kp == undefined || !kp)
+                        {
+                            throw 'err';
+                        }
+
+                        var inv = kp+moment().format('YYYYMMDD')+await Task.create_random_number(7);
 
                         var addbook = await dbConnection.query("INSERT INTO booking (id_booking, id_jadwal, id_customer, nama_pemesan, alamat, notelp, jumlahpenumpang, totalbayar, email_ver, tanggal_booking, tanggal_keberangkatan, invoice_number, session_id, payment_channel, payment_code, status_pembayaran, wm, ws)" +
                         "VALUES (:ib_, :ij_, :ic_, :np_, :a_, :nt_, :jp_, :tb_, :em_, :tglb_, :tglk_, :inv_, :sess_, :pcy_, :pc_, :sp_, :wm_, :ws_)",
@@ -693,20 +730,14 @@ exports.prosesbooking = async function(req, res)
                             raw: true
                         })
 
-                        // var rid = await dbConnection.query("SELECT @out as rid",
-                        // { type: sequelize.QueryTypes.SELECT, transaction: transaction },
-                        // {
-                        //     raw: true
-                        // });
-
                         var k;
                         for(k=0; k<pax; k++)
                         {
-                                var addrinbook = await dbConnection.query("INSERT INTO rincian_booking(id_booking, noidentitas, nama) VALUES (:idbook_,:noiden_,:nama_)",
-                                { replacements:{idbook_:ib, noiden_:noiden[k], nama_:nama[k]}, type: sequelize.QueryTypes.INSERT, transaction: transaction },
-                                {
-                                    raw: true
-                                });
+                            var addrinbook = await dbConnection.query("INSERT INTO rincian_booking(id_booking, noidentitas, nama) VALUES (:idbook_,:noiden_,:nama_)",
+                            { replacements:{idbook_:ib, noiden_:noiden[k], nama_:nama[k]}, type: sequelize.QueryTypes.INSERT, transaction: transaction },
+                            {
+                                raw: true
+                            });
                         }
                         if(k == pax)
                         {
@@ -866,7 +897,7 @@ exports.invonumber = async function(req, res)
                 throw 'err';
             }
             
-            var data = await dbConnection.query("SELECT * FROM booking WHERE id_booking = :idbook_",
+            var data = await dbConnection.query("SELECT * FROM booking WHERE id_booking = :idbook_ AND status_pembayaran != 'Expired'",
             { replacements:{idbook_:param}, type: sequelize.QueryTypes.SELECT },
             {
                 raw: true
